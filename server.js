@@ -5,16 +5,22 @@ const fetch = require('node-fetch');
 const FormData = require('form-data');
 
 const app = express();
+
+// Trust Render proxy
+app.set('trust proxy', true);
+
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 100 * 1024 * 1024 } });
 
-// Allow ALL origins — required for browser requests
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
-app.options('*', cors());
+// Allow ALL origins
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept');
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
 
 app.use(express.json());
 
