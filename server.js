@@ -58,7 +58,17 @@ app.post('/compress-pdf', upload.single('file'), async (req, res) => {
             input_format: 'pdf',
             output_format: 'pdf',
             engine: 'ghostscript',
-            quality: quality
+            quality: quality,
+            profile: 'ebook',
+            color_image_resolution: 150,
+            grayscale_image_resolution: 150,
+            color_image_downsample: true,
+            grayscale_image_downsample: true,
+            color_image_filter: 'jpeg',
+            grayscale_image_filter: 'jpeg',
+            encode_color_images: true,
+            encode_grayscale_images: true,
+            jpeg_quality: quality
           },
           'export-pdf': {
             operation: 'export/url',
