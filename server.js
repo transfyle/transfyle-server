@@ -24,7 +24,7 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
-const API_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiYzgyMzk4ZTgyNTFmMGM3OTAzMGMwOWE5YTc5ZGNmYmI5MWYyMWRkMDQ0MzQ2ODk2NjJhZmI1NWU3ODFiODAwNTRlMzY5YTQ4MTFlOTViNzIiLCJpYXQiOjE3Nzg5MzU5MzMuMzM4ODI1LCJuYmYiOjE3Nzg5MzU5MzMuMzM4ODI2LCJleHAiOjQ5MzQ2MDk1MzMuMzMyMDI0LCJzdWIiOiI3NTU4MTAzNyIsInNjb3BlcyI6WyJ0YXNrLnJlYWQiLCJ0YXNrLndyaXRlIiwidXNlci5yZWFkIiwidXNlci53cml0ZSIsIndlYmhvb2sucmVhZCIsIndlYmhvb2sud3JpdGUiXX0.RHK1AhZXqIJO3yojXhnPT5IKDF82Lnu15P6hWRGqpks3DVWwiVISGj-pZhJPNi2p7JldBGsRIoljBcX_1BclP65FOC6adl56F7dGoKukOHug8MWYD7nswTtbABEhAuUUUAEiSjlWzeSwzXLxD1jE0LI5Al9e85C8RDOVTHVO0gmRpx2Aab_Hf9bxLhQMmHNfG_MNGgXxH3TW7f8QeY0t-GaxP2cLGQO4g6rJDmAkEdw6bo2GE6QbEJulcdnZ6duEdSDU_8iBLUGlsospfJwHRp_O32MLo8J1Ao-DBh6k7jlsQdvvrZKYql3uD7E0mcqIwmtbxGwfBv-dk3sdosBzk0vc13phRKC0xjho0CLk8Ov8mYt2BFbIQR8eR1nYXjqNIxWQgMYuLk9-XZdsAmoiustW7kak96Ruc_D_pAwOAWbS1ndW3rveDehs-0P4w4QjJ__r07FUnleh-VBa-QPbNyTgwIKXvUXZ1hQsJ7LWUF4iFmwP5nrSpN49ADuOckXdevc2lTUi62M6vvY5Aty8Pv5uQ1qiVOeOs48XL2JTys7fogKQBHn_UMmL-jPeina36-v95WIxAcWGbdYu26mHw4vY7cH83Y4Ji_6L8r3ucY1Dh0Pzr-Ka6Lhd7USp3VnuwuTIUeIzQUKugrwHT2DE43hOn0fXkcEEjeBQ_PUWGvY';
+const API_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiYmExYWNlZTY3MzhjMzI4MWE4NTBjZDkyZWE4NmE3NGQ1OTU4MDgyOTQxNjc2YTJmNTJhYmQ4ZjYxOGJiOGZhODI4ZWMzYmU2ZDVjMjZiMmYiLCJpYXQiOjE3Nzg5MzcxODMuNTQ2MDA5LCJuYmYiOjE3Nzg5MzcxODMuNTQ2MDExLCJleHAiOjQ5MzQ2MTA3ODMuNTM5OTQxLCJzdWIiOiI3NTU4MTAzNyIsInNjb3BlcyI6WyJ1c2VyLnJlYWQiLCJ1c2VyLndyaXRlIiwidGFzay5yZWFkIiwidGFzay53cml0ZSIsIndlYmhvb2sucmVhZCIsIndlYmhvb2sud3JpdGUiLCJwcmVzZXQucmVhZCIsInByZXNldC53cml0ZSJdfQ.UIYG0uI3F8IYcH0BrIcl-6qrzDj70PaV3jkY8gKvLTe5abXxHO3gg63PTYvor9-PtAsfIAAxfhPJ3qEqUAfV7fTe58eulgDQ3zBeGmOBJqbEyPKvKXAzxLy1qClXuut1xibHva6nu1SoQkDVPs3Hxivt39fWgUzEV5WLdY85lHGkPyTRn4HqPsghJe0_kBjPBtz5SGWp4oSwGy0MPwKakadVgdvI06rbz66WYNKuihvu-lffEpWvEG6RS7FZU-hKnS_hT2enfDnkY42TyfWmMd1Ww--uKt_yWrZg71Hltn7SkftNsvX1Pzvs6M_bBcvQI61lS1wBRBxFKy3s41esd02jCSMJQ0JLV3XlRDyBNGraUzZKmsqSBomrcFd0uHcDdGEyYidIF-u5s6HWKSqQYGN_0VYvMGZGaMfnAOWXRYmdfBY-JtezxcfkLx8zEWCkD4xLo4E2vFdW6sQXj3_EKxf-dsNeJVSzE3SbXNGntVqPpv5xke2VhhJcIMuIpwGds1dj1ssFwnXy_juQ3l1YwB4iyiNowkb871D99wicjBIDvXucPy4upB7DppbC2XvaG80M8Vua8Iuo6hV9aqCdpgob1aVtvpjxmueiOqXfczzlERRvXC6_yyc72OHD6lF45nYzzo9evlPIgkc6pPYkvJJ2wubibHUSPFK067Fc9wg';
 
 // Health check
 app.get('/', (req, res) => {
@@ -53,20 +53,15 @@ app.post('/compress-pdf', upload.single('file'), async (req, res) => {
       },
       body: JSON.stringify({
         tasks: {
-          'upload-pdf': { operation: 'import/upload' },
+          'upload-pdf': {
+            operation: 'import/upload'
+          },
           'compress-pdf': {
-            operation: 'convert',
+            operation: 'optimize',
             input: 'upload-pdf',
             input_format: 'pdf',
             output_format: 'pdf',
-            engine: 'ghostscript',
-            pdf_settings: {
-              pdf_profile: 'ebook',
-              downsample_color_images: true,
-              color_image_resolution: 150,
-              downsample_grayscale_images: true,
-              grayscale_image_resolution: 150
-            }
+            quality: quality
           },
           'export-pdf': {
             operation: 'export/url',
