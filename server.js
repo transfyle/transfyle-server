@@ -43,32 +43,30 @@ app.post('/compress-pdf', upload.single('file'), async (req, res) => {
     console.log(`Compressing: ${file.originalname} (${(file.size/1024/1024).toFixed(1)}MB) quality:${quality}`);
 
     // Step 1 — Create CloudConvert job
+    console.log('Creating CloudConvert job...');
     const jobRes = await fetch('https://api.cloudconvert.com/v2/jobs', {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + API_KEY,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'User-Agent': 'Transfyle/1.0'
       },
       body: JSON.stringify({
         tasks: {
           'upload-pdf': { operation: 'import/upload' },
           'compress-pdf': {
-            operation: 'optimize',
+            operation: 'convert',
             input: 'upload-pdf',
             input_format: 'pdf',
             output_format: 'pdf',
             engine: 'ghostscript',
-            quality: quality,
-            profile: 'ebook',
-            color_image_resolution: 150,
-            grayscale_image_resolution: 150,
-            color_image_downsample: true,
-            grayscale_image_downsample: true,
-            color_image_filter: 'jpeg',
-            grayscale_image_filter: 'jpeg',
-            encode_color_images: true,
-            encode_grayscale_images: true,
-            jpeg_quality: quality
+            pdf_settings: {
+              pdf_profile: 'ebook',
+              downsample_color_images: true,
+              color_image_resolution: 150,
+              downsample_grayscale_images: true,
+              grayscale_image_resolution: 150
+            }
           },
           'export-pdf': {
             operation: 'export/url',
@@ -78,7 +76,11 @@ app.post('/compress-pdf', upload.single('file'), async (req, res) => {
       })
     });
 
-    if (!jobRes.ok) throw new Error('CloudConvert job failed: ' + jobRes.status);
+    if (!jobRes.ok) {
+      const errText = await jobRes.text();
+      console.error('CloudConvert error response:', errText);
+      throw new Error('CloudConvert job failed: ' + jobRes.status + ' — ' + errText);
+    }
     const job = await jobRes.json();
 
     // Step 2 — Upload file
