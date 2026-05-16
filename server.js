@@ -123,3 +123,85 @@ app.post('/compress-pdf', upload.single('file'), async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Transfyle server running on port ${PORT}`));
+
+
+// ── PROTECT PDF ──────────────────────────────────────────
+app.post('/protect-pdf', upload.single('file'), async (req, res) => {
+  try {
+    const file = req.file;
+    const password = req.body.password;
+    if (!file) return res.status(400).json({ error: 'No file uploaded' });
+    if (!password) return res.status(400).json({ error: 'No password provided' });
+    console.log(`Protecting: ${file.originalname}`);
+    const jobRes = await fetch('https://api.cloudconvert.com/v2/jobs', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tasks: {
+          'upload': { operation: 'import/upload' },
+          'protect': { operation: 'convert', input: 'upload', input_format: 'pdf', output_format: 'pdf', options: { user_password: password, owner_password: password + '_owner' } },
+          'export': { operation: 'export/url', input: 'protect' }
+        }
+      })
+    });
+    if (!jobRes.ok) { const e = await jobRes.text(); throw new Error('CloudConvert: ' + e); }
+    const job = await jobRes.json();
+    const uploadTask = job.data.tasks.find(t => t.name === 'upload');
+    const form = new FormData();
+    Object.entries(uploadTask.result.form.parameters).forEach(([k,v]) => form.append(k,v));
+    form.append('file', file.buffer, { filename: file.originalname, contentType: 'application/pdf' });
+    await fetch(uploadTask.result.form.url, { method: 'POST', body: form });
+    let exportTask = null;
+    for (let i = 0; i < 30; i++) {
+      await new Promise(r => setTimeout(r, 2000));
+      const s = await (await fetch(`https://api.cloudconvert.com/v2/jobs/${job.data.id}`, { headers: { 'Authorization': 'Bearer ' + API_KEY } })).json();
+      exportTask = s.data.tasks.find(t => t.name === 'export');
+      if (exportTask?.status === 'finished') break;
+      if (s.data.tasks.some(t => t.status === 'error')) throw new Error('Protection failed');
+    }
+    const buffer = await (await fetch(exportTask.result.files[0].url)).buffer();
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="protected.pdf"');
+    res.send(buffer);
+  } catch (err) { console.error('Protect error:', err.message); res.status(500).json({ error: err.message }); }
+});
+
+// ── UNLOCK PDF ──────────────────────────────────────────
+app.post('/unlock-pdf', upload.single('file'), async (req, res) => {
+  try {
+    const file = req.file;
+    const password = req.body.password || '';
+    if (!file) return res.status(400).json({ error: 'No file uploaded' });
+    console.log(`Unlocking: ${file.originalname}`);
+    const jobRes = await fetch('https://api.cloudconvert.com/v2/jobs', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tasks: {
+          'upload': { operation: 'import/upload' },
+          'unlock': { operation: 'convert', input: 'upload', input_format: 'pdf', output_format: 'pdf', options: { pdf_password: password } },
+          'export': { operation: 'export/url', input: 'unlock' }
+        }
+      })
+    });
+    if (!jobRes.ok) { const e = await jobRes.text(); throw new Error('CloudConvert: ' + e); }
+    const job = await jobRes.json();
+    const uploadTask = job.data.tasks.find(t => t.name === 'upload');
+    const form = new FormData();
+    Object.entries(uploadTask.result.form.parameters).forEach(([k,v]) => form.append(k,v));
+    form.append('file', file.buffer, { filename: file.originalname, contentType: 'application/pdf' });
+    await fetch(uploadTask.result.form.url, { method: 'POST', body: form });
+    let exportTask = null;
+    for (let i = 0; i < 30; i++) {
+      await new Promise(r => setTimeout(r, 2000));
+      const s = await (await fetch(`https://api.cloudconvert.com/v2/jobs/${job.data.id}`, { headers: { 'Authorization': 'Bearer ' + API_KEY } })).json();
+      exportTask = s.data.tasks.find(t => t.name === 'export');
+      if (exportTask?.status === 'finished') break;
+      if (s.data.tasks.some(t => t.status === 'error')) throw new Error('Wrong password or file not encrypted');
+    }
+    const buffer = await (await fetch(exportTask.result.files[0].url)).buffer();
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="unlocked.pdf"');
+    res.send(buffer);
+  } catch (err) { console.error('Unlock error:', err.message); res.status(500).json({ error: err.message }); }
+});
