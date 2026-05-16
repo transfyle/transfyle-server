@@ -7,11 +7,14 @@ const FormData = require('form-data');
 const app = express();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 100 * 1024 * 1024 } });
 
-// Allow requests from transfyle.com
+// Allow ALL origins — required for browser requests
 app.use(cors({
-  origin: ['https://transfyle.com', 'https://transfyle.netlify.app', 'http://localhost:3000'],
-  methods: ['GET', 'POST'],
+  origin: '*',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+app.options('*', cors());
 
 app.use(express.json());
 
